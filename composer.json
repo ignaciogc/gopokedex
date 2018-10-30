@@ -1,0 +1,32 @@
+{
+    "name": "GoPokedex",
+    "description": "Pokemon Go Pokedex tracker",
+    "keywords": ["Pokemon Go", "Pokedex", "Pokemon Tracker"],
+    "license": "GNU GPLv3",
+    "authors": [
+        {
+            "name": "Ignacio Garcia",
+            "email": "igcemail@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7",
+        "filp/whoops": "^2.1",
+        "guzzlehttp/guzzle": "~6.0",
+        "patricklouys/http": "^1.4",
+        "nikic/fast-route": "^1.2",
+        "rdlowrey/auryn": "^1.4",
+        "twig/twig": "^2.0",
+        "symfony/yaml": "^4.0",
+        "delight-im/auth": "^8.0",
+        "mailgun/mailgun-php": "^2.5",
+        "php-http/guzzle6-adapter": "^1.1",
+        "delight-im/cookie": "^3.1",
+        "hashids/hashids": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GoPokedex\\": "src/"
+        }
+    }
+}

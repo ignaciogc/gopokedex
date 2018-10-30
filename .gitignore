@@ -1,0 +1,6 @@
+src/config.yml
+vendor/
+cache/
+public/assets/images/pokemon/*.png
+public/assets/images/pokemon/thumb/*.png
+.DS_Store

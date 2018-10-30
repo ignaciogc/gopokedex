@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>GoPokedex</title>
+        <link rel="icon" type="image/png" href="/assets/images/favicon.ico?v=20180706">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-tooltip@2.0.1/dist/css/bulma-tooltip.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@2.0.1/dist/css/bulma-divider.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700|Roboto+Mono:500" rel="stylesheet">
+        <link href="https://unpkg.com/ionicons@4.1.2/dist/css/ionicons.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/gpdex.css">
+    </head>
+    <body>
+        <div id="app">
+            {% block content %}
+            {% endblock %}
+            <footer class="footer">
+                <div class="container">
+                    <div class="content has-text-centered">
+                        <p>
+                            <strong>Pokémon Go Pokédex</strong>
+                            <br>
+                            A full Pokédex as of <strong class="updated">[[last_update]]</strong> includes <strong class="counter">[[counts.total]]</strong> Pokémon.
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <script src="//cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+        <script defer src="/assets/js/gpdex.js"></script>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function(event) {
+                {% if action in ['verified','login_error'] %}
+                app.modals.login = true;
+                {% elseif action in ['registration_error'] %}
+                app.modals.register = true;
+                {% elseif action in ['verification_error'] %}
+                app.modals.verification = true;
+                {% elseif action in ['code_error'] %}
+                app.modals.code = true;
+                {% endif %}
+            });
+        </script>
+    </body>
+</html>

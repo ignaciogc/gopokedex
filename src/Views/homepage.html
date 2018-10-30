@@ -1,0 +1,820 @@
+{% extends "layout/#{app_layout_name}" %}
+{% block content %}
+<section class="hero is-primary is-bold">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-two-thirds">
+                    <h1 class="title">
+                        Go Pokedex
+                    </h1>
+                    <h2 class="subtitle">
+                        Keep track of your Pokemon to make sure you catch 'em all!
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<nav class="navbar is-transparent">
+    <div class="container">
+        <div class="navbar-brand is-hidden">
+            <div class="navbar-item">
+                GoPokedex
+            </div>
+        </div>
+        <div class="navbar-burger burger" data-target="navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div id="navigation" class="navbar-menu">
+            <div class="navbar-start">
+                {% if auth.check() %}
+
+                {% endif %}
+            </div>
+            <div class="navbar-end">
+                {% if auth.check() %}
+                <div class="navbar-item">
+                    <span class="icon"><i class="ion ion-md-contact"></i></span>
+                    <span>{{ auth.getUsername() }}</span>
+                </div>
+                <a class="navbar-item" href="/logout">
+                    <span class="icon"><i class="ion ion-md-log-out"></i></span>
+                    <span>Log Out</span>
+                </a>
+                {% else %}
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <button class="button is-primary" v-on:click="modals.login = true">
+                            <span class="icon"><i class="ion ion-md-key"></i></span>
+                            <span>Login</span>
+                        </button>
+                        <button class="button is-primary" v-on:click="modals.register = true">
+                            <span class="icon"><i class="ion ion-md-contact"></i></span>
+                            <span>Register</span>
+                        </button>
+                        <button class="button is-primary tooltip" v-on:click="modals.code = true"
+                            data-tooltip="No email required">
+                            <span class="icon"><i class="ion ion-md-flash"></i></span>
+                            <span>Unique Code</span>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+<!--section class="section" id="navbar">
+    <div class="container">
+        <div class="columns is-mobile">
+            {% if auth.check() %}
+            <div class="column has-text-right">
+                Hello {{ auth.getUsername() }}
+                <button class="button is-text">
+                    <span class="icon"><i class="ion ion-md-unlock"></i></span>
+                    <span>Logout</span>
+                </button>
+            </div>
+            {% else %}
+            <div class="column has-text-right">
+                <button class="button is-primary" v-on:click="modals.login = true">
+                    <span class="icon"><i class="ion ion-md-key"></i></span>
+                    <span>Login</span>
+                </button>
+                <button class="button is-primary" v-on:click="modals.register = true">
+                    <span class="icon"><i class="ion ion-md-contact"></i></span>
+                    <span>Register</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>-->
+
+{%if action in ['registered','reconfirmed'] %}
+<section class="section">
+    <div class="container">
+        <article class="message is-primary">
+            <div class="message-body">
+                <span class="icon"><i class="ion ion-md-happy"></i></span>
+                {% if action == 'registered' %}
+                    Account created!&nbsp;
+                    {% if code %}
+                        Your unique code is: <strong>{{ code }}</strong><br>
+                        Do not forget it, or you will not be able to access your saved information.
+                    {% else %}
+                        Check your email for the activation link.
+                    {% endif %}
+                {% else %}
+                    A new activation email has been sent.
+                {% endif %}
+            </div>
+        </article>
+    </div>
+</section>
+{% endif %}
+
+<section class="section" id="counter">
+    <div class="container">
+        <div class="has-text-centered">
+            <p class="is-size-7 is-uppercase">
+                max seen / caught<br>
+                <span class="updated">[[last_update]]</updated>
+            </p>
+            <h1 class="title is-1 has-text-primary has-text-huge has-roboto-font">[[counts.total]]</h1>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-narrow">
+                <aside class="menu box">
+                    <p class="menu-label">
+                        Main Filters
+                    </p>
+                    <ul class="menu-list" id="filters">
+                        <li>
+                            <a v-on:click="updateFilter('legendary')"  v-bind:class="{ 'has-text-primary': filters.legendary }" data-filter="legendary">
+                                <i class="ion ion-md-square-outline"></i>
+                                Legendary <span class="is-size-7">([[counts.legendary]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateFilter('shiny')" v-bind:class="{ 'has-text-primary': filters.shiny }" data-filter="shiny">
+                                <i class="ion ion-md-square-outline"></i>
+                                Shiny <span class="is-size-7">([[counts.shiny]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateFilter('regional')" v-bind:class="{ 'has-text-primary': filters.regional }" data-filter="regional">
+                                <i class="ion ion-md-square-outline"></i>
+                                Regional <span class="is-size-7">([[counts.regional]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateFilter('oor')" v-bind:class="{ 'has-text-primary': filters.oor }" data-filter="oor">
+                                <i class="ion ion-md-square-outline"></i>
+                                Out of Rotation <span class="is-size-7">([[counts.oor]])</span>
+                            </a>
+                        </li>
+                    </ul>
+                    {% if auth.check() %}
+                    <p class="menu-label">
+                        My Pokedex
+                    </p>
+                    <ul class="menu-list" id="myFilters">
+                        <li>
+                            <a v-on:click="updateMyFilter('hasSeen')"  v-bind:class="{ 'has-text-primary': myFilters.hasSeen }" data-filter="hasSeen">
+                                <i class="ion ion-md-square-outline"></i>
+                                Seen <span class="is-size-7">([[counts.hasSeen]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('notSeen')"  v-bind:class="{ 'has-text-primary': myFilters.notSeen }" data-filter="notSeen">
+                                <i class="ion ion-md-square-outline"></i>
+                                Not seen <span class="is-size-7">([[counts.notSeen]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('hasCaught')"  v-bind:class="{ 'has-text-primary': myFilters.hasCaught }" data-filter="hasCaught">
+                                <i class="ion ion-md-square-outline"></i>
+                                Caught <span class="is-size-7">([[counts.hasCaught]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('notCaught')"  v-bind:class="{ 'has-text-primary': myFilters.notCaught }" data-filter="notCaught">
+                                <i class="ion ion-md-square-outline"></i>
+                                Not caught <span class="is-size-7">([[counts.notCaught]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('hasShiny')"  v-bind:class="{ 'has-text-primary': myFilters.hasShiny }" data-filter="hasShiny">
+                                <i class="ion ion-md-square-outline"></i>
+                                Shiny <span class="is-size-7">([[counts.hasShiny]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('notShiny')"  v-bind:class="{ 'has-text-primary': myFilters.notShiny }" data-filter="notShiny">
+                                <i class="ion ion-md-square-outline"></i>
+                                Not Shiny <span class="is-size-7">([[counts.notShiny]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('hasLucky')"  v-bind:class="{ 'has-text-primary': myFilters.hasLucky }" data-filter="hasLucky">
+                                <i class="ion ion-md-square-outline"></i>
+                                Lucky <span class="is-size-7">([[counts.hasLucky]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('notLucky')"  v-bind:class="{ 'has-text-primary': myFilters.notLucky }" data-filter="notLucky">
+                                <i class="ion ion-md-square-outline"></i>
+                                Not Lucky <span class="is-size-7">([[counts.notLucky]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('hasPerfect')"  v-bind:class="{ 'has-text-primary': myFilters.hasPerfect }" data-filter="hasPerfect">
+                                <i class="ion ion-md-square-outline"></i>
+                                100% <span class="is-size-7">([[counts.hasPerfect]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateMyFilter('notPerfect')"  v-bind:class="{ 'has-text-primary': myFilters.notPerfect }" data-filter="notPerfect">
+                                <i class="ion ion-md-square-outline"></i>
+                                Not 100% <span class="is-size-7">([[counts.notPerfect]])</span>
+                            </a>
+                        </li>
+                    </ul>
+                    {% endif %}
+                    <p class="menu-label">
+                        Regions
+                    </p>
+                    <ul class="menu-list" id="regions">
+                        <li>
+                            <a v-on:click="updateRegion('kanto')" v-bind:class="{ 'has-text-primary': region == 'kanto' }" data-filter="kanto">
+                                <i class="ion ion-md-radio-button-off"></i>
+                                Kanto <span class="is-size-7">([[counts.kanto]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateRegion('johto')" v-bind:class="{ 'has-text-primary': region == 'johto' }" data-filter="johto">
+                                <i class="ion ion-md-radio-button-off"></i>
+                                Johto <span class="is-size-7">([[counts.johto]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateRegion('hoenn')" v-bind:class="{ 'has-text-primary': region == 'hoenn' }" data-filter="hoenn">
+                                <i class="ion ion-md-radio-button-off"></i>
+                                Hoenn <span class="is-size-7">([[counts.hoenn]])</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a v-on:click="updateRegion('sinnoh')" v-bind:class="{ 'has-text-primary': region == 'sinnoh' }" data-filter="sinnoh">
+                                <i class="ion ion-md-radio-button-off"></i>
+                                Sinnoh <span class="is-size-7">([[counts.sinnoh]])</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="menu-label">
+                        Search
+                    </p>
+                    <div class="field">
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" v-model="search">
+                            <span class="icon is-small is-left">
+                                <i class="ion ion-md-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <div class="column">
+                <div id="breakdowns">
+                    <div class="columns is-multiline is-mobile" id="pokedex">
+                        <div v-for="pokemon in pokedex" v-if="pokemon.available" v-show="
+                            ((filters.shiny && pokemon.shiny) || !filters.shiny) &&
+                            ((filters.legendary && pokemon.legendary) || !filters.legendary) &&
+                            ((filters.regional && pokemon.regional) || !filters.regional) &&
+                            ((filters.oor && pokemon.oor) || !filters.oor) &&
+                            (
+                                (myFilters.hasSeen && pokemon.user.hasSeen) ||
+                                (myFilters.notSeen && !pokemon.user.hasSeen) ||
+                                (!myFilters.hasSeen && !myFilters.notSeen)
+                            ) &&
+                            (
+                                (myFilters.hasCaught && pokemon.user.hasCaught) ||
+                                (myFilters.notCaught && !pokemon.user.hasCaught) ||
+                                (!myFilters.hasCaught && !myFilters.notCaught)
+                            ) &&
+                            (
+                                (myFilters.hasPerfect && pokemon.user.hasPerfect) ||
+                                (myFilters.notPerfect && !pokemon.user.hasPerfect) ||
+                                (!myFilters.hasPerfect && !myFilters.notPerfect)
+                            ) &&
+                            (
+                                (myFilters.hasShiny && pokemon.user.hasShiny) ||
+                                (myFilters.notShiny && !pokemon.user.hasShiny) ||
+                                (!myFilters.hasShiny && !myFilters.notShiny)
+                            ) &&
+                            (
+                                (myFilters.hasLucky && pokemon.user.hasLucky) ||
+                                (myFilters.notLucky && !pokemon.user.hasLucky) ||
+                                (!myFilters.hasLucky && !myFilters.notLucky)
+                            ) &&
+                            (region == null || region == pokemon.region.toLowerCase()) &&
+                            (pokemon.name.toLowerCase().search(search.toLowerCase()) > -1 || pokemon.dex == search || search == '')
+                            " class="column is-half-mobile">
+                            <div class="card">
+                                <div class="card-content pokemon-card">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <figure class="image is-48x48">
+                                                <img :src="'/assets/images/pokemon/thumb/' + pokemon.dex + '.png'"
+                                                    :alt="pokemon.name" :class="{'not-seen': !pokemon.user.hasSeen}">
+                                            </figure>
+                                        </div>
+                                        <div class="media-content">
+                                            <p class="title is-4 has-roboto-font is-marginless is-nowrap">[[pokemon.dex]]</p>
+                                            <p class="subtitle is-7 is-uppercase is-marginless is-nowrap">[[pokemon.region]]</p>
+                                        </div>
+                                    </div>
+                                    <div class="dex-name has-text-centered">
+                                        [[pokemon.name]]
+                                    </div>
+                                    <p class="has-text-centered pokemon-filters has-text-grey">
+                                        <span class="icon is-small tooltip" v-if="pokemon.shiny" data-tooltip="Shiny">
+                                            <i class="ion ion-md-star"></i>
+                                        </span>
+                                        <span class="icon is-small tooltip" v-if="pokemon.regional" :data-tooltip="pokemon.regional">
+                                            <i class="ion ion-md-globe"></i>
+                                        </span>
+                                        <span class="icon is-small tooltip" v-if="pokemon.oor" data-tooltip="Out of Rotation">
+                                            <i class="ion ion-md-close"></i>
+                                        </span>
+                                        <span class="icon is-small form-count tooltip" v-if="pokemon.forms.length > 0" :data-tooltip="pokemon.forms">
+                                            <span class="is-size-7">
+                                              [[pokemon.forms.length]]
+                                            </span>
+                                        </span>
+                                    </p>
+                                </div>
+                                <footer class="card-footer">
+                                    {% if auth.check() %}
+                                    <a class="card-footer-item tooltip" v-bind:data-tooltip="[pokemon.user.hasSeen?'Mark not seen':'Mark as seen']"
+                                        v-bind:class="pokemon.user.hasSeen ? 'has-background-light has-text-danger' : 'has-text-grey-light'"
+                                        v-on:click="updatePokemon(pokemon, 'hasSeen')" v-show="!pokemon.user.hasCaught">
+                                        <span class="icon is-small">
+                                            <i class="ion ion-md-eye"></i>
+                                        </span>
+                                    </a>
+                                    <a class="card-footer-item tooltip" v-bind:data-tooltip="[pokemon.user.hasCaught?'Mark not caught':'Mark as caught']"
+                                        v-bind:class="pokemon.user.hasCaught ? 'has-background-light has-text-danger' : 'has-text-grey-light'"
+                                        v-on:click="updatePokemon(pokemon, 'hasCaught')">
+                                        <span class="icon is-small ">
+                                            <i class="ion ion-md-hand"></i>
+                                        </span>
+                                    </a>
+                                    <a class="card-footer-item tooltip" v-bind:data-tooltip="[pokemon.user.hasPerfect?'Remove perfect':'Perfect']"
+                                        v-bind:class="pokemon.user.hasPerfect ? 'has-background-light has-text-danger' : 'has-text-grey-light'"
+                                        v-on:click="updatePokemon(pokemon, 'hasPerfect')">
+                                        <span class="icon is-small">
+                                            <i class="ion ion-md-arrow-up"></i>
+                                            <!--<span class="is-size-7">100</span>-->
+                                        </span>
+                                    </a>
+                                    <a class="card-footer-item tooltip" v-bind:data-tooltip="[pokemon.user.hasShiny?'Remove shiny':'Shiny']"
+                                        v-bind:class="pokemon.user.hasShiny ? 'has-background-light has-text-danger' : 'has-text-grey-light'"
+                                        v-on:click="updatePokemon(pokemon, 'hasShiny')" v-show="pokemon.user.hasCaught && pokemon.shiny">
+                                        <span class="icon is-small">
+                                            <i class="ion ion-md-star" alt="Shiny" title="Shiny"></i>
+                                        </span>
+                                    </a>
+                                    <a class="card-footer-item tooltip" v-bind:data-tooltip="[pokemon.user.hasLucky?'Remove lucky':'Lucky']"
+                                        v-bind:class="pokemon.user.hasLucky ? 'has-background-light has-text-danger' : 'has-text-grey-light'"
+                                        v-on:click="updatePokemon(pokemon, 'hasLucky')" v-show="pokemon.user.hasCaught && !pokemon.shiny">
+                                        <span class="icon is-small">
+                                            <i class="ion ion-md-radio-button-on" alt="Lucky" title="Lucky"></i>
+                                        </span>
+                                    </a>
+                                    <a class="card-footer-item has-text-grey-light tooltip" data-tooltip="More information ..."
+                                        v-on:click="pokemonDetails(pokemon)">
+                                        <span class="icon is-small">
+                                            <span class="icon is-small">
+                                                <i class="ion ion-ios-more"></i>
+                                            </span>
+                                        </span>
+                                    </a>
+                                    {% else %}
+                                    <span class="card-footer-item has-text-centered">
+                                        <a href="#" v-on:click="modals.login = true">Login to save &hellip;</a>
+                                    </span>
+                                    {% endif %}
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if auth.check() %}
+<!-- DETAILS MODAL -->
+<div class="modal" v-bind:class="{'is-active': modals.details}">
+    <div class="modal-background" v-on:click="modals.details = false"></div>
+    <div class="modal-content" v-if="myPokemon !== null">
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left is-hidden-mobile">
+                        <figure class="image is-215x215">
+                            <img :src="'/assets/images/pokemon/' + myPokemon.dex + '.png'"
+                                :alt="myPokemon.name" :class="{'not-seen': !myPokemon.user.hasSeen}">
+                        </figure>
+                        <div class="pokemon-type centered is-hidden">
+                            <div class="tags" v-bind:class="{'has-addons': myPokemon.typeb}">
+                                <span class="tag" v-bind:class="myPokemon.typea.toLowerCase()">
+                                    [[myPokemon.typea]]
+                                </span>
+                                <span class="tag" v-bind:class="myPokemon.typeb.toLowerCase()" v-show="myPokemon.typeb">
+                                    [[myPokemon.typeb]]
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="media-content">
+                        <figure class="image is-32x32 is-hidden-tablet is-pulled-left">
+                            <img :src="'/assets/images/pokemon/thumb/' + myPokemon.dex + '.png'"
+                                :alt="myPokemon.name" :class="{'not-seen': !myPokemon.user.hasSeen}">
+                        </figure>
+                        <p class="title is-3">
+                            [[myPokemon.name]]
+                            <span class="tag is-medium is-pulled-right">#[[myPokemon.dex]]</span>
+                        </p>
+                        <div class="columns is-multiline is-mobile pokedex-columns">
+                            <div class="column is-half">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasSeen')"
+                                    :class="myPokemon.user.hasSeen ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-eye"></i></span>
+                                    Seen
+                                </div>
+                            </div>
+                            <div class="column is-half">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasCaught')"
+                                    :class="myPokemon.user.hasCaught ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-hand"></i></span>
+                                    Caught
+                                </div>
+                            </div>
+                            <div class="column is-half" v-show="myPokemon.shiny">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasShiny')"
+                                    :class="myPokemon.user.hasShiny ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-star"></i></span>
+                                    Shiny
+                                </div>
+                            </div>
+                            <div class="column is-half">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasLucky')"
+                                    :class="myPokemon.user.hasLucky ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-radio-button-on"></i></span>
+                                    Lucky
+                                </div>
+                            </div>
+                            <div class="column is-half">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasPerfect')"
+                                    :class="myPokemon.user.hasPerfect ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-arrow-up"></i></span>
+                                    Perfect
+                                </div>
+                            </div>
+                            <div class="column is-half">
+                                <div class="pokedex-column" v-on:click="updatePokemon(myPokemon, 'hasImperfect')"
+                                    :class="myPokemon.user.hasImperfect ? 'has-background-success' : 'has-background-light'">
+                                    <span class="icon is-small"><i class="ion ion-md-arrow-down"></i></span>
+                                    Imperfect
+                                </div>
+                            </div>
+                            <div class="column is-half-tablet is-full-mobile" v-for="form in myPokemon.forms">
+                                <template v-if="myPokemon.shinyforms.includes(form)">
+                                    <div class="columns is-mobile">
+                                        <div class="column form-column">
+                                            <div class="pokedex-column capitalized" v-on:click="updatePokemonForms(myPokemon, form)"
+                                                :class="myPokemon.user.hasForms.includes(form) ? 'has-background-success' : 'has-background-light'">
+                                                <span class="icon is-small"><i class="ion ion-md-contacts"></i></span>
+                                                [[form]]
+                                            </div>
+                                        </div>
+                                        <div class="column is-narrow shiny-form-column">
+                                            <div class="pokedex-column" v-on:click="updatePokemonShinyForms(myPokemon, form)"
+                                                :class="myPokemon.user.hasShinyForms.includes(form) ? 'has-background-success' : 'has-background-light'">
+                                                <span class="icon is-small"><i class="ion ion-md-star"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="pokedex-column capitalized" v-on:click="updatePokemonForms(myPokemon, form)"
+                                        :class="myPokemon.user.hasForms.includes(form) ? 'has-background-success' : 'has-background-light'">
+                                        <span class="icon is-small"><i class="ion ion-md-contacts"></i></span>
+                                        [[form]]
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="card-footer">
+                <div class="card-footer-item">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control">
+                            <div class="tags">
+                                <span class="tag is-primary">[[myPokemon.region]]</span>
+                            </div>
+                        </div>
+                        <div class="control pokemon-type">
+                            <div class="tags" v-bind:class="{'tags has-addons': myPokemon.typeb}">
+                                <span class="tag" v-bind:class="myPokemon.typea.toLowerCase()">
+                                    [[myPokemon.typea]]
+                                </span>
+                                <span class="tag" v-if="myPokemon.typeb"
+                                    v-bind:class="myPokemon.typeb.toLowerCase()">
+                                    [[myPokemon.typeb]]
+                                </span>
+                            </div>
+                        </div>
+                        <div class="control" v-show="myPokemon.shiny">
+                            <div class="tags has-addons">
+                                <span class="tag is-warning"><i class="ion ion-md-star"></i></span>
+                                <span class="tag">Shiny</span>
+                            </div>
+                        </div>
+                        <div class="control" v-show="myPokemon.regional">
+                            <div class="tags has-addons">
+                                <span class="tag is-success"><i class="ion ion-md-globe"></i></span>
+                                <span class="tag">[[myPokemon.regional]]</span>
+                            </div>
+                        </div>
+                        <div class="control" v-show="myPokemon.oor">
+                            <div class="tags has-addons">
+                                <span class="tag is-danger"><i class="ion ion-md-close"></i></span>
+                                <span class="tag">Out of Rotation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" v-on:click="modals.details = false"></button>
+</div>
+<!-- END OF DETAILS MODAL -->
+{% else %}
+<!-- REGISTER MODAL -->
+<div class="modal" v-bind:class="{'is-active': modals.register}">
+    <div class="modal-background" v-on:click="modals.register = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Register</p>
+        </header>
+        <section class="modal-card-body">
+            {% if action == 'registration_error' %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    <span class="icon"><i class="ion ion-md-sad"></i></span>
+                    {{ error }}
+                </div>
+            </article>
+            {% else %}
+            <article class="message">
+                <div class="message-body">
+                    If you do not wish to provide your email,
+                    <a v-on:click="modals.register = false; modals.code = true">click here</a>.
+                </div>
+            </article>
+            {% endif %}
+            <form method="post" action="/register">
+                <div class="field">
+                    <label class="label" for="register-email">Email <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" placeholder="Email " id="register-email" name="email" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-mail"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="username">Display Name</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="username" placeholder="John Doe " id="username" name="username">
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-contact"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="register-password">Password <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" id="register-password" name="password" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-lock"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="password_repeat">Repeat Password <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" id="password_repeat" name="password_repeat" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-lock"></i>
+                        </span>
+                    </div>
+                </div>
+                <br>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary">
+                            <span class="icon"><i class="ion ion-ios-send"></i></span>
+                            <span>Register</span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-light" v-on:click="modals.register = false; modals.login = true">
+                            <span class="icon"><i class="ion ion-md-key"></i></span>
+                            <span>Have an account?</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <button class="modal-close is-large" aria-label="close" v-on:click="modals.register = false"></button>
+</div>
+<!-- END OF REGISTER MODAL -->
+
+<!-- LOGIN MODAL -->
+<div class="modal" v-bind:class="{'is-active': modals.login}">
+    <div class="modal-background" v-on:click="modals.login = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Login</p>
+        </header>
+        <section class="modal-card-body">
+            {% if action == 'verified' %}
+            <article class="message is-primary">
+                <div class="message-body">
+                    <span class="icon"><i class="ion ion-md-happy"></i></span>
+                    Your account is now verified. Please, log in below.
+                </div>
+            </article>
+            {% elseif action == 'login_error' %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    <span class="icon"><i class="ion ion-md-sad"></i></span>
+                    {{ error }}
+                </div>
+            </article>
+            {% endif %}
+            <form method="post" action="/login">
+                <div class="field">
+                    <label class="label" for="login-email">Email <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" placeholder="Email " id="login-email" name="email" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-mail"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="login-password">Password <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" id="login-password" name="password" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-lock"></i>
+                        </span>
+                    </div>
+                </div>
+                <br>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary">
+                            <span class="icon"><i class="ion ion-md-key"></i></span>
+                            <span>Login</span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-light" v-on:click="modals.login = false; modals.register = true">
+                            <span class="icon"><i class="ion ion-md-contact"></i></span>
+                            <span>Create new account</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <button class="modal-close is-large" aria-label="close" v-on:click="modals.login = false"></button>
+</div>
+<!-- END OF LOGIN MODAL -->
+
+<!-- VERIFICATION MODAL -->
+<div class="modal" v-bind:class="{'is-active': modals.verification}">
+    <div class="modal-background" v-on:click="modals.verification = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Account verification</p>
+        </header>
+        <section class="modal-card-body">
+            {% if action == 'verification_error' %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    <span class="icon"><i class="ion ion-md-sad"></i></span>
+                    {{ error }}
+                </div>
+            </article>
+            {% endif %}
+            <p>
+                Use the following form to request a new activation code.<br>
+                Make sure that you whitelist emails coming from
+                &#097;&#100;&#109;&#105;&#110;&#064;&#103;&#111;&#112;&#111;&#107;&#101;&#100;&#101;&#120;&#046;&#099;&#111;&#109;
+            </p>
+            <form method="post" action="/reconfirm">
+                <div class="field">
+                    <label class="label" for="verification-email">Email <span class="has-text-danger">*</span></label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" placeholder="Email " id="verification-email" name="email" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-mail"></i>
+                        </span>
+                    </div>
+                </div>
+                <br>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary">
+                            <span class="icon"><i class="ion ion-ios-send"></i></span>
+                            <span>Request</span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-text" type="cancel" v-on:click="modals.verification = false">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <button class="modal-close is-large" aria-label="close" v-on:click="modals.verification = false"></button>
+</div>
+<!-- END OF VERIFICATION MODAL -->
+
+<!-- CODE MODAL -->
+<div class="modal" v-bind:class="{'is-active': modals.code}">
+    <div class="modal-background" v-on:click="modals.code = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Unique Code Account</p>
+        </header>
+        <section class="modal-card-body">
+            {% if action == 'code_error' %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    <span class="icon"><i class="ion ion-md-sad"></i></span>
+                    Invalid code! Try again.
+                </div>
+            </article>
+            {% endif %}
+            <article class="message">
+                <div class="message-body">
+                    Use your unique code to access your GoPokedex
+                    information, or generate a new code to start tracking.
+                </div>
+            </article>
+            <form method="post" action="/code-login">
+                <label class="label" for="code">Log in with your code</label>
+                <div class="field is-grouped">
+                    <div class="control has-icons-left is-expanded">
+                        <input class="input" type="text" placeholder="Unique Code " id="code" name="code" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-flash"></i>
+                        </span>
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary">
+                            <span class="icon"><i class="ion ion-md-key"></i></span>
+                            <span>Login</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="is-divider" data-content="OR"></div>
+            <form method="post" action="/code-register">
+                <label class="label" for="code-username">Request new code</label>
+                <div class="field is-grouped">
+                    <div class="control has-icons-left is-expanded">
+                        <input class="input" type="username" placeholder="Display name" id="code-username" name="code-username" required>
+                        <span class="icon is-small is-left">
+                            <i class="ion ion-md-contact"></i>
+                        </span>
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary">
+                            <span class="icon"><i class="ion ion-ios-flash"></i></span>
+                            <span>Create code</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+    <button class="modal-close is-large" aria-label="close" v-on:click="modals.code = false"></button>
+</div>
+<!-- END OF CODE MODAL -->
+{% endif %}
+
+{% endblock %}

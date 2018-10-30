@@ -1,0 +1,17 @@
+{% extends "layout/#{app_layout_name}" %}
+{% block content %}
+<h1 style="color: #212240; font-size: 32px; line-height: 1.3em; font-weight: 600; font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; max-width: 320px; margin: 0 0 24px; padding: 0;">
+    Welcome trainer.
+</h1>
+
+<p style="font-size: 16px; line-height: 24px; font-weight: 400; font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; display: block; margin: 13px 0;">
+    Welcome {{username}}
+</p>
+<p style="font-size: 16px; line-height: 24px; font-weight: 400; font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; display: block; margin: 13px 0;">
+    We are happy to have you. However, before you can start using GoPokedex, you need to activate your account using this link:<br>
+    <a href="{{registration_url}}">Activate your account</a>
+</p>
+<p style="font-size: 16px; line-height: 24px; font-weight: 400; font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; display: block; margin: 13px 0;">
+    Thank you!
+</p>
+{% endblock %}
