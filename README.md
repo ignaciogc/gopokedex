@@ -21,7 +21,7 @@ Installing GoPokedex for your own use should be pretty straight forward if you h
 
 1. Download the code.
 2. Run ```composer install``` to install library dependencies.
-3. Copy the **config.sample.yaml** file to **config.yaml** and update with your information.
+3. Copy the **src/config.sample.yml** file to **src/config.yml** and update with your information.
     - You can use **mysql**, **postgresql**, or **sqlite** databases
     - You will need your own **mailgun** credentials
 4. Import the 4 **SQL** files in ```src/Migration``` to create the required databases
