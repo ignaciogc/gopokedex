@@ -1,6 +1,6 @@
 #  GoPokedex
 
-GoPokedex is an extended Pokémon Go tracker.
+GoPokedex is an extended Pokémon Go tracker available at https://gopokedex.com
 
   - Track your seen, caught, shiny, 100%, 0%, and lucky Pokémon
   - Information about different forms
