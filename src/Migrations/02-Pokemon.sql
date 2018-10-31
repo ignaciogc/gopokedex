@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `pokemon` (
   `region` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `regional` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `forms` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `shinyforms` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `shinyforms` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY `dex` (`dex`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
