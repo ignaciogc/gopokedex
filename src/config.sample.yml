@@ -17,7 +17,7 @@ production:
     url: yoursite.url
     database:
         type: mysql # mysql, postgresql, sqlite
-        host: 000.000.00.00
+        host: localhost
         port: 3306
         database: database_name
         username: root

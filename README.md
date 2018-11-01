@@ -37,6 +37,10 @@ You should include your own images in there named with the Pokémon's Pokedex nu
 
 To add new Pokémon or update the information for the Pokémon in the system, you can either update the ```pokemon``` database directly, or update the ```src/Migrations/pokedex.json``` file and re-run ```/admin/pokemon``` as the **admin** user.
 
+### Deploying to production
+
+When deploying to production, the only change that you will need to do is update **environment** variable in the ```src/Bootstrap.php``` file to **production**
+
 
 ## Contributing
 
