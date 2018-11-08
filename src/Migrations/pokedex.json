@@ -8021,6 +8021,26 @@
         "shinyforms": []
     },
     {
+    	"dex": "402",
+    	"name": "Kricketune",
+    	"atk": 160,
+    	"def": 100,
+    	"hp": 184,
+    	"maxcp": "1653",
+    	"typea": "Bug",
+    	"typeb": "",
+    	"shiny": 0,
+    	"male": "",
+    	"female": "",
+    	"available": 1,
+    	"oor": 0,
+    	"legendary": 0,
+    	"region": "Sinnoh",
+    	"regional": "",
+    	"forms": [],
+        "shinyforms": []
+    },
+    {
     	"dex": "403",
     	"name": "Shinx",
     	"atk": 1,
