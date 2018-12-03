@@ -497,7 +497,7 @@
     	"region": "Kanto",
     	"regional": "",
     	"forms": ["party", "halloween", "ash", "christmas", "summer"],
-        "shinyforms": ["party", "halloween", "fragment"]
+        "shinyforms": ["party", "halloween"]
     },
     {
     	"dex": "026",
@@ -517,7 +517,7 @@
     	"region": "Kanto",
     	"regional": "",
     	"forms": ["party", "halloween", "ash", "christmas", "summer", "alola"],
-        "shinyforms": ["party", "halloween", "fragment"]
+        "shinyforms": ["party", "halloween", "alola"]
     },
     {
     	"dex": "027",
