@@ -2992,7 +2992,7 @@
     	"male": "",
     	"female": "",
     	"available": 1,
-    	"oor": 0,
+    	"oor": 1,
     	"legendary": 1,
     	"region": "Kanto",
     	"regional": "",
